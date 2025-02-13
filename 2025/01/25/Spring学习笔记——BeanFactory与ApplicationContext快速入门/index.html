@@ -20,20 +20,28 @@
     var CONFIG = {"hostname":"qingmingxin.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="简单介绍Spring的IOC、DI以及AOP思想。">
+  <meta name="description" content="BeanFactory 和 ApplicationContext 是 Spring 框架中管理 Bean 的两种主要接口。BeanFactory 是最基本的容器，采用延迟加载，只有在需要时才创建 Bean，适合简单应用和资源有限的环境。它提供基本的依赖注入，但不支持高级特性如事件传播和 AOP。相比之下，ApplicationContext 是 BeanFactory 的扩展，提供更多功能。它在启">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spring学习笔记————简介">
-<meta property="og:url" content="https://qingmingxin.github.io/2025/01/03/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:title" content="Spring学习笔记——BeanFactory与ApplicationContext快速入门">
+<meta property="og:url" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/index.html">
 <meta property="og:site_name" content="清茗小记">
-<meta property="og:description" content="简单介绍Spring的IOC、DI以及AOP思想。">
+<meta property="og:description" content="BeanFactory 和 ApplicationContext 是 Spring 框架中管理 Bean 的两种主要接口。BeanFactory 是最基本的容器，采用延迟加载，只有在需要时才创建 Bean，适合简单应用和资源有限的环境。它提供基本的依赖注入，但不支持高级特性如事件传播和 AOP。相比之下，ApplicationContext 是 BeanFactory 的扩展，提供更多功能。它在启">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-01-03T13:06:30.000Z">
-<meta property="article:modified_time" content="2025-01-03T13:40:54.955Z">
+<meta property="og:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p1.png">
+<meta property="og:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p2.png">
+<meta property="og:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p3.png">
+<meta property="og:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p4.png">
+<meta property="og:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p5.png">
+<meta property="og:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p6.png">
+<meta property="og:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p7.png">
+<meta property="article:published_time" content="2025-01-25T06:09:27.000Z">
+<meta property="article:modified_time" content="2025-02-13T03:29:16.530Z">
 <meta property="article:author" content="qingmingxin">
 <meta property="article:tag" content="Spring">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/p1.png">
 
-<link rel="canonical" href="https://qingmingxin.github.io/2025/01/03/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E7%AE%80%E4%BB%8B/">
+<link rel="canonical" href="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
 
 
 <script id="page-configurations">
@@ -46,7 +54,7 @@
   };
 </script>
 
-  <title>Spring学习笔记————简介 | 清茗小记</title>
+  <title>Spring学习笔记——BeanFactory与ApplicationContext快速入门 | 清茗小记</title>
   
 
 
@@ -170,7 +178,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://qingmingxin.github.io/2025/01/03/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E2%80%94%E2%80%94%E7%AE%80%E4%BB%8B/">
+    <link itemprop="mainEntityOfPage" href="https://qingmingxin.github.io/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -183,7 +191,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Spring学习笔记————简介
+          Spring学习笔记——BeanFactory与ApplicationContext快速入门
         </h1>
 
         <div class="post-meta">
@@ -192,10 +200,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2025-01-03 21:06:30 / 修改时间：21:40:54" itemprop="dateCreated datePublished" datetime="2025-01-03T21:06:30+08:00">2025-01-03</time>
+              <time title="创建时间：2025-01-25 14:09:27" itemprop="dateCreated datePublished" datetime="2025-01-25T14:09:27+08:00">2025-01-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2025-02-13 11:29:16" itemprop="dateModified" datetime="2025-02-13T11:29:16+08:00">2025-02-13</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -224,34 +238,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>简单介绍Spring的IOC、DI以及AOP思想。</p>
+        <p>BeanFactory 和 ApplicationContext 是 Spring 框架中管理 Bean 的两种主要接口。BeanFactory 是最基本的容器，采用延迟加载，只有在需要时才创建 Bean，适合简单应用和资源有限的环境。它提供基本的依赖注入，但不支持高级特性如事件传播和 AOP。<br>相比之下，ApplicationContext 是 BeanFactory 的扩展，提供更多功能。它在启动时预加载所有单例 Bean，并支持国际化、事件发布和 AOP 等特性，适合复杂的企业级应用。因此，通常推荐使用 ApplicationContext，因为它更灵活和功能强大。</p>
 <span id="more"></span>
 
-<p>​	Spring 框架的发展历程可以追溯到2003年，当时由 Rod Johnson 创建并发布了第一个版本。Spring 的初衷是为了简化企业级 Java 应用程序的开发，尤其是解决当时企业级应用开发中普遍存在的复杂性和耦合度高的问题。随着时间的推移，Spring 不断发展壮大，成为了一个完整的生态系统，涵盖了从核心的依赖注入和面向切面编程到 Web 应用开发、数据访问、安全、测试等多个领域。</p>
-<h4 id="传统-Javaweb-开发的困惑"><a href="#传统-Javaweb-开发的困惑" class="headerlink" title="传统 Javaweb 开发的困惑"></a><strong>传统 Javaweb 开发的困惑</strong></h4><blockquote>
+<p><strong>BeanFactory 快速入门</strong></p>
 <ol>
-<li>层与层之间紧密耦合在了一起，接口和具体实现紧密耦合在了一起<ol>
-<li>程序代码中不需要手动的 new 对象，第三方根据要求为程序提供需要的 Bean 对象；</li>
+<li>新建对应的 UserService 实现类；</li>
+<li>在 xml 文件中进行配置；<img src="p1.png"></li>
+<li>在测试代码中，调用 beanFactory 读取配置文件并获取对应的实例对象<img src="p2.png"></li>
+<li>新建并实现对应的 UserDao 文件；</li>
+<li>更改 UserService 代码，添加注入 UserDao 相关代码<img src="p3.png"></li>
+<li>更改 xml 配置文件，通过 property 的属性，设置在 Userservice 中注入 UserDao；<img src="p4.png"></li>
+<li>在运行测试代码，在初始化中，输出结果中显示读取 xml 配置文件后工厂调用了对应的注入代码。<img src="p5.png"></li>
 </ol>
-</li>
-<li>通用的事务功能耦合在业务代码中，通用的日志功能耦合在业务代码中。<ol>
-<li>第三方根据要求为程序提供需要的 Bean 对象的<strong>代理对象（增强的 Bean 对象）</strong></li>
+<p><strong>ApplicationContext 快速入门</strong></p>
+<p>ApplicationContext 成为 Spring 容器，内部封装了 BeanFactory，比 BeanFactory 功能更丰富更强大，开发中常用 ApplicationContext。</p>
+<p><img src="p6.png"></p>
+<p><strong>BeanFactory 与 ApplicationContext 的关系</strong></p>
+<ol>
+<li>BeanFactory 是 Spring 早期的接口，成为 Spring 的 Bean 工厂，ApplicationContext 是后期更高级接口，称之为 Spring 容器。</li>
+<li>ApplicationContext 在 BeanFactory 基础上对功能进行了扩展。例如：监听功能、国际化功能等。BeanFactory 的 API 更偏向底层，ApplicationContext 的 API 大多数是对这些底层 API 的封装。</li>
+<li>Bean 创建的主要逻辑和功能都封装在 BeanFactory 中，ApplicationFactory 不仅继承了 BeanFactory，而且 ApplicationContext 内部还维护了 BeanFactory 的引用，所以 ApplicationContext 与 BeanFactory 既有继承关系，又有融合关系。</li>
+<li>Bean 的初始化时机不同，原始 BeanFactory 是在首次调用 getBean 时才进行 Bean 的创建，而 ApplicationContext 则是配置文件加载，容器一创建就将 Bean 都实例化并初始化好。</li>
 </ol>
-</li>
-</ol>
-</blockquote>
-<h4 id="IoC、DI-和-AOP-思想的提出"><a href="#IoC、DI-和-AOP-思想的提出" class="headerlink" title="IoC、DI 和 AOP 思想的提出"></a><strong>IoC、DI 和 AOP 思想的提出</strong></h4><blockquote>
-<p><strong>IoC</strong>（Inversion of Control） 思想</p>
-<p>控制反转，强调将原来在程序中创建 Bean 的权利反转给第三方。</p>
-<p><strong>DI</strong> （Dependency Injection）思想</p>
-<p>依赖注入，强调的 Bean 之间关系，这种关系负责第三方负责去设置。</p>
-<p><strong>AOP</strong> （Aspect Oriented Programming）思想</p>
-<p>面向切面编程，功能的横向抽取，主要的实现方式就是 Proxy。</p>
-</blockquote>
-<h4 id="Java-中常见的框架："><a href="#Java-中常见的框架：" class="headerlink" title="Java 中常见的框架："></a><strong>Java 中常见的框架</strong>：</h4><ul>
-<li>基础框架： MyBatis、Spring、SpringMVC、Structs2、Hibernate 等。</li>
-<li>服务框架： MQ、ES、Nacos 等。</li>
-</ul>
+<p><img src="p7.png"></p>
 
     </div>
 
@@ -270,12 +280,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2025/01/02/Linux%E8%BF%9B%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1%E2%80%94%E2%80%94%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%EF%BC%88Posix%E5%85%B1%E4%BA%AB%E5%86%85%E5%AD%98%E5%8C%BA%EF%BC%89/" rel="prev" title="Linux进程间通信——共享内存（Posix共享内存区）">
-      <i class="fa fa-chevron-left"></i> Linux进程间通信——共享内存（Posix共享内存区）
+    <a href="/2025/01/03/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%AE%80%E4%BB%8B/" rel="prev" title="Spring学习笔记——简介">
+      <i class="fa fa-chevron-left"></i> Spring学习笔记——简介
     </a></div>
       <div class="post-nav-item">
-    <a href="/2025/01/25/Spring%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E2%80%94%E2%80%94BeanFactory%E4%B8%8EApplicationContext%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8/" rel="next" title="Spring学习笔记————BeanFactory与ApplicationContext快速入门">
-      Spring学习笔记————BeanFactory与ApplicationContext快速入门 <i class="fa fa-chevron-right"></i>
+    <a href="/2025/02/13/Spring%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94REST/" rel="next" title="Spring 学习——REST">
+      Spring 学习——REST <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -335,7 +345,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F-Javaweb-%E5%BC%80%E5%8F%91%E7%9A%84%E5%9B%B0%E6%83%91"><span class="nav-number">1.</span> <span class="nav-text">传统 Javaweb 开发的困惑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IoC%E3%80%81DI-%E5%92%8C-AOP-%E6%80%9D%E6%83%B3%E7%9A%84%E6%8F%90%E5%87%BA"><span class="nav-number">2.</span> <span class="nav-text">IoC、DI 和 AOP 思想的提出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java-%E4%B8%AD%E5%B8%B8%E8%A7%81%E7%9A%84%E6%A1%86%E6%9E%B6%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">Java 中常见的框架：</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
